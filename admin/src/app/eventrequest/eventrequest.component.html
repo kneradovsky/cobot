@@ -1,0 +1,21 @@
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">id</th>
+                <th scope="col">location</th>
+                <th scope="col">chat_id</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let evr of eventReqs; index as i">
+                <th scope="row">{{i+1}}</th>
+                <td>{{evr._id}}</td>
+                <td>{{evr.location}}</td>
+                <td>{{evr.init_chat_id}}</td>
+
+            </tr>
+        </tbody>
+    </table>
+</div>

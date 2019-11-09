@@ -1,0 +1,18 @@
+<div class="container">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">id</th>
+                <th scope="col">location</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let ev of events; index as i">
+                <th scope="row">{{i+1}}</th>
+                <td>{{ev._id}}</td>
+                <td>{{ev.location}}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
