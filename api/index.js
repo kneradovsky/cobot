@@ -123,5 +123,35 @@ app.post('/api/users', async (req,res) => {
 })
 
 
+app.get('/api/event_reqs', async (req,res) => {
+    try {
+        if(db==null) {
+            res.send({error: "No database"})
+            return
+        }
+        const users = db.collection('event_requests')
+        const docs = await users.find().toArray()
+        res.status(200).send(docs)
+            
+    } catch (error) {
+        res.status(500).send(err)
+    }
+})
+
+app.get('/api/events', async (req,res) => {
+    try {
+        if(db==null) {
+            res.send({error: "No database"})
+            return
+        }
+        const users = db.collection('events')
+        const docs = await users.find().toArray()
+        res.status(200).send(docs)
+            
+    } catch (error) {
+        res.status(500).send(err)
+    }
+})
+
 
 app.listen(8080,()=>console.log("started at 8080"))

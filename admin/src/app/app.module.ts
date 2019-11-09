@@ -15,6 +15,10 @@ import { LocationsComponent } from './locations/locations.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
 import { UserComponent } from './user/user.component';
+import { EventsComponent } from './events/events.component';
+import { UserService } from './user.service';
+import { EventsService } from './events.service';
+import { EventrequestComponent } from './eventrequest/eventrequest.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -25,7 +29,9 @@ export function tokenGetter() {
     AppComponent,
     LoginComponent,
     LocationsComponent,
-    UserComponent
+    UserComponent,
+    EventsComponent,
+    EventrequestComponent
   ],
   imports: [
     BrowserModule,
@@ -46,7 +52,9 @@ export function tokenGetter() {
     AuthService,
     AuthGuard,
     ConfigService,
-    LocationsService
+    LocationsService,
+    UserService,
+    EventsService
   ],
   bootstrap: [AppComponent]
 })
