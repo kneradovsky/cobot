@@ -11,7 +11,7 @@ const tokenVar = 'access_token';
 })
 export class AuthService {
 
-  constructor(private cfg:ConfigService, private http: HttpClient) { }
+  constructor(private cfg: ConfigService, private http: HttpClient) { }
 
   login(username: string, password: string): Observable<boolean> {
     return this.http.post<{user: string, token: string}>(this.cfg.apiUrl + '/auth',{user:{username: username,password:password}})
