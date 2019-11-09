@@ -9,7 +9,7 @@ import { CUser } from '../user';
 })
 export class UserComponent implements  OnInit {
   users: Array<CUser>;
-  currentUser: CUser;
+  currentUser: CUser = new CUser();
   constructor(private srv: UserService) { }
 
   ngOnInit() {
