@@ -9,7 +9,12 @@ import { AppComponent } from './app.component';
 import { LoginComponent } from './login/login.component';
 import {AuthService} from './auth.service';
 import {AuthGuard} from './auth.guard';
+import {ConfigService} from './config.service';
+import {LocationsService} from './locations.service';
 import { LocationsComponent } from './locations/locations.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { UserComponent } from './user/user.component';
 
 export function tokenGetter() {
   return localStorage.getItem('access_token');
@@ -19,24 +24,29 @@ export function tokenGetter() {
   declarations: [
     AppComponent,
     LoginComponent,
-    LocationsComponent
+    LocationsComponent,
+    UserComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     JwtModule.forRoot({
       config: {
-        tokenGetter: () => localStorage.getItem('access_token'),
+        tokenGetter: tokenGetter,
         whitelistedDomains: ['localhost:4000'],
         blacklistedRoutes: ['localhost:4000/api/auth']
       }
     }),
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    BrowserAnimationsModule,
+    NgbModule,
   ],
   providers: [
     AuthService,
-    AuthGuard
+    AuthGuard,
+    ConfigService,
+    LocationsService
   ],
   bootstrap: [AppComponent]
 })

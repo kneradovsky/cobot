@@ -1,0 +1,30 @@
+<div class="container">
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">id</th>
+            <th scope="col">e-mail</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let user of users; index as i" (click)="selectUser(i)">
+            <th scope="row">{{i+1}}</th>
+            <td>{{user._id}}</td>
+            <td>{{user.email}}</td>
+        </tr>
+    </tbody>
+</table>
+</div>
+<form>
+    <div class="form-group col-3">
+        id: {{currentUser._id}}
+    </div>
+    <div class="form-group col-3">
+        <label for="username">email</label>
+        <input type="text" name="email" class="form-control" [(ngModel)]="currentUser.email" />
+    </div>
+    <div class="form-group col-3">
+        <button class="btn btn-primary" (click)="updateUser()">Update</button>
+    </div>
+</form>

@@ -1,1 +1,17 @@
-<p>locations works!</p>
+
+<table class="table table-striped">
+<thead>
+    <tr>    
+        <th scope="col">#</th>
+        <th scope="col">id</th>
+        <th scope="col">name</th>
+    </tr>
+</thead>
+<tbody>
+    <tr *ngFor="let loc of locations; index as i">
+        <th scope="row">{{i+1}}</th>
+        <td>{{loc._id}}</td>
+        <td>{{loc.name}}</td>
+    </tr>
+</tbody>
+</table>
