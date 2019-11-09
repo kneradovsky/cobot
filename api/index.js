@@ -4,10 +4,12 @@ const cors = require('cors')
 const bodyparser = require('body-parser')
 const expressjwt = require('express-jwt')
 
-const mongo = require('mongodb').MongoClient
+const mongo = require('mongodb')
+const mongoClient = mongo.MongoClient
+const oid = mongo.ObjectID
 const murl = 'mongodb://localhost:27017'
 const dbname = 'test_bot_database'
-const client = new mongo(murl)
+const client = new mongoClient(murl)
 var db = null
 client.connect((err) => {
     db = client.db(dbname)
@@ -66,7 +68,7 @@ app.delete('/api/locations', async (req,res) => {
             return
         }
         console.log(req.body)
-        const r = await db.collection('locations').deleteOne({_id:req.body.location._id})
+        const r = await db.collection('locations').deleteOne({_id:oid(req.body.location._id)})
         res.status(200).send({deleted:r.deletedCount})
     } catch(err) {
         res.status(500).send(err)
@@ -96,7 +98,7 @@ app.delete('/api/users', async (req,res) => {
             res.send({error: "No database"})
             return
         }
-        const r = await db.collection('users').deleteOne({_id:req.body.user._id})
+        const r = await db.collection('users').deleteOne({_id:oid(req.body.user._id)})
         res.status(200).send({deleted:r.deletedCount})
             
     } catch (error) {
