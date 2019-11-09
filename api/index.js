@@ -113,7 +113,7 @@ app.post('/api/users', async (req,res) => {
             return
         }
         const nuser = req.body.user;
-        const r = await db.collection('users').findOneAndReplace({_id:oid(user._id)},user)
+        const r = await db.collection('users').findOneAndReplace({_id:oid(nuser._id)},nuser)
         res.status(200).send({updated:r.updatedCount})
             
     } catch (error) {
