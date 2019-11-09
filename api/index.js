@@ -106,6 +106,22 @@ app.delete('/api/users', async (req,res) => {
     }
 })
 
+app.post('/api/users', async (req,res) => {
+    try {
+        if(db==null) {
+            res.send({error: "No database"})
+            return
+        }
+        const nuser = req.body.user;
+        const r = await db.collection('users').findOneAndReplace({_id:oid(user._id)},user)
+        res.status(200).send({updated:r.updatedCount})
+            
+    } catch (error) {
+        res.status(500).send(err)        
+    }
+
+})
+
 
 
 app.listen(8080,()=>console.log("started at 8080"))
