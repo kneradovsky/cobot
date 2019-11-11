@@ -34,7 +34,11 @@ def echo(bot, update):
     text = update.message.text
     print("{}".format(text))
     if email_validator(text):
-        add_user(c_i, text)
+        print('start mail')
+        try:
+            add_user(c_i, text)
+        except BaseException as be:
+            print(be)
         bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! С минуты на минуту тебе придёт письмо с четырёхзначным паролем. Пришли мне его, чтобы я знал, что ты - это ты.")
     elif check_user(c_i) == False and otp_validator(text) == True:
         r = check_user_OTP(c_i, text)

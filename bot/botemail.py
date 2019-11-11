@@ -5,12 +5,16 @@ from os import remove
 from credentials import smtp_pass, smtp_user, smtp_host
 
 def verify_mail(mail, code):
-    smtpObj = smtplib.SMTP(host=smtp_host)
-    smtpObj.starttls()
-    smtpObj.login(user=smtp_user, password=smtp_pass)
-    msg = form_reg_msg(code, smtp_user, mail)
-    smtpObj.send_message(msg=msg)
-    smtpObj.close()
+    print('start verification')
+    try:
+        smtpObj = smtplib.SMTP(host=smtp_host)
+        smtpObj.starttls()
+        smtpObj.login(user=smtp_user, password=smtp_pass)
+        msg = form_reg_msg(code, smtp_user, mail)
+        smtpObj.send_message(msg=msg)
+        smtpObj.close()
+    except BaseException as be:
+        print(be)
 
 def send_invitaion(mails, event):
     print('try to invite')
@@ -24,7 +28,6 @@ def send_invitaion(mails, event):
     except BaseException as be:
         print(be)
     remove(event)
-    print('cleaning done')
 
 def form_reg_msg(code, sent_from, sent_to):
     content = '''Доброго времени суток, коллега!
