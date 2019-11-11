@@ -33,18 +33,9 @@ def echo(bot, update):
     print('got echo c_i: ', c_i)
     text = update.message.text
     print("{}".format(text))
-#    """    o_v = otp_validator(text)
-#    c_u = check_user(c_i)
-#    e_v = email_validator(text)
-#    n_s = name_surname_validator(text)[0]
-#    print(f'otp_validator(text) - {o_v}')
-#    print(f'check_user(c_i) - {c_u}')
-#    print(f'email_validator(text) - {e_v}')
-#    print(f'name_surname_validator(text)[0] - {n_s}')
     if email_validator(text):
         add_user(c_i, text)
         bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! С минуты на минуту тебе придёт письмо с четырёхзначным паролем. Пришли мне его, чтобы я знал, что ты - это ты.")
-        #        bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! Можешь теперь ещё добавить свои имя и фамилию, использую команды /name и /surname соответственно? После того, как наберёшь команду, сразу пиши имя или фамилию. Например: '/name Петя' - позволит представиться Петей, а /nameМаша - нет.")
     elif check_user(c_i) == False and otp_validator(text) == True:
         r = check_user_OTP(c_i, text)
         if r:

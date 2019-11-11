@@ -2,10 +2,10 @@ import smtplib
 from email.message import EmailMessage
 from os import remove
 
-from credentials import smtp_pass, smtp_user
+from credentials import smtp_pass, smtp_user, smtp_host
 
 def verify_mail(mail, code):
-    smtpObj = smtplib.SMTP(host='smtp.mail.ru')
+    smtpObj = smtplib.SMTP(host=smtp_host)
     smtpObj.starttls()
     smtpObj.login(user=smtp_user, password=smtp_pass)
     msg = form_reg_msg(code, smtp_user, mail)
@@ -14,7 +14,7 @@ def verify_mail(mail, code):
 
 def send_invitaion(mails, event):
     print('try to invite')
-    smtpObj = smtplib.SMTP(host='smtp.mail.ru')
+    smtpObj = smtplib.SMTP(host=smtp_host)
     smtpObj.starttls()
     smtpObj.login(user=smtp_user, password=smtp_pass)
     try:

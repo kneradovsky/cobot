@@ -25,7 +25,6 @@ def add_user(chat_id, email):
             'OTP' : OTP,
             'incoming_events' : []    }
     mdb_uid = users.insert_one(user).inserted_id
-    print("OTP: ", OTP)
     verify_mail(email, OTP)
 
 def update_user(chat_id, updation):
@@ -35,7 +34,6 @@ def update_user(chat_id, updation):
         up = users.find_one_and_update(
         {'chat_id' : chat_id},
         {'$set' : {updation[0] : updation[1]}})
-        print(up)
 
 def check_user_OTP(chat_id, OTP):
     users = db.users
