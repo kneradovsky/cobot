@@ -17,17 +17,17 @@ users = db.users
 def add_user(chat_id, email):
     print('adding user')
     try:
-    users = db.users
-    OTP = randint(1000, 9999)
-    user = {   'chat_id' : chat_id,
-            'email' : email,
-            'name': False,
-            'surname': False,
-            'works' : False,
-            'OTP' : OTP,
-            'incoming_events' : []    }
-    mdb_uid = users.insert_one(user).inserted_id
-    verify_mail(email, OTP)
+        users = db.users
+        OTP = randint(1000, 9999)
+        user = {   'chat_id' : chat_id,
+                'email' : email,
+                'name': False,
+                'surname': False,
+                'works' : False,
+                'OTP' : OTP,
+                'incoming_events' : []    }
+        mdb_uid = users.insert_one(user).inserted_id
+        verify_mail(email, OTP)
     except BaseException as be:
         print(be)
 
