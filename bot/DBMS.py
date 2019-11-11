@@ -1,8 +1,10 @@
 from pymongo import MongoClient
-from datetime import datetime
 from credentials import bd as host
-client = MongoClient('84.201.173.78', 27017)
-#client = MongoClient(host, 27017)
+from random import randint
+from botemail import verify_mail
+from parsers import location_to_delta, list_to_datetime
+from botcalendar import create_event
+client = MongoClient(host, 27017)
 db = client.test_bot_database
 users = db.users
 """user = { 'chat_id' : 247893408,
@@ -13,15 +15,21 @@ users = db.users
 
 
 def add_user(chat_id, email):
-    users = db.users
-    user = {   'chat_id' : chat_id,
-            'email' : email,
-            'name': 'John',
-            'surname': 'Dow',
-            'works' : True,
-            'incoming_events' : []    }
-    mdb_uid = users.insert_one(user).inserted_id
-    print(mdb_uid)
+    print('adding user')
+    try:
+        users = db.users
+        OTP = randint(1000, 9999)
+        user = {   'chat_id' : chat_id,
+                'email' : email,
+                'name': False,
+                'surname': False,
+                'works' : False,
+                'OTP' : OTP,
+                'incoming_events' : []    }
+        mdb_uid = users.insert_one(user).inserted_id
+        verify_mail(email, OTP)
+    except BaseException as be:
+        print(be)
 
 def update_user(chat_id, updation):
     users = db.users
@@ -30,7 +38,17 @@ def update_user(chat_id, updation):
         up = users.find_one_and_update(
         {'chat_id' : chat_id},
         {'$set' : {updation[0] : updation[1]}})
-        print(up)
+
+def check_user_OTP(chat_id, OTP):
+    users = db.users
+    user = users.find_one({'chat_id' : chat_id})
+    print(int(user['OTP']) == int(OTP))
+    if int(user['OTP']) == int(OTP):
+        u = users.find_one_and_update({'chat_id' : chat_id}, {'$set': {'works' : True}})
+        print(u)
+        return True
+    else:
+        return False
 
 
 def check_user(chat_id):
@@ -67,13 +85,29 @@ def update_event_request(chat_id, updation):
 def find_a_match(event_request):
     event_requests = db.event_requests
     print('fam er:', event_request)
+    my_id = event_request['init_chat_id']
     location = event_request['location']
     date = event_request['date']
     time = event_request['time']
     print(location, date, time)
-    match = db.event_requests.find_one({"other_chat_id" : 0, "location" : location, "date" : date, "time" : time, 'finished': 1})[0]
-    print('match -', match)
-    return match
+    match = db.event_requests.find_one_and_update(
+    {"init_chat_id" : { "$ne" : my_id}, "other_chat_id" : 0, "location" : str(location), "date" : str(date), "time" : str(time), 'finished': 1},
+#    {"other_chat_id" : 0, "location" : str(location), "date" : str(date), "time" : str(time), 'finished': 1},
+    {"$set" : {"other_chat_id" : my_id}})
+    if match:
+        db.event_requests.find_one_and_update(
+        {"init_chat_id" : my_id, "other_chat_id" : 0, "location" : str(location), "date" : str(date), "time" : str(time), 'finished': 1},
+        {"$set" : {"other_chat_id" : match['init_chat_id']}})
+        print('match -', match)
+        my_co = users.find_one({'chat_id' : match['init_chat_id']})
+        me = users.find_one({'chat_id' : event_request['init_chat_id']})
+        print(my_co)
+        delta = location_to_delta(location)
+        start_end = list_to_datetime((date, time), delta)
+        create_event(start_end, (my_co['name'], me['name']), location, (my_co['email'], me['email']))
+        return (match, my_co, me)
+    else:
+        return False
 
 def my_waiting_requests(chat_id):
     event_requests = db.event_requests
