@@ -1,8 +1,3 @@
-﻿#https://github.com/python-telegram-bot/python-telegram-bot/wiki/Extensions-–-Your-first-Bot
-#https://groosha.gitbooks.io/telegram-bot-lessons/content/chapter8.html
-__rev = 0.1
-__upd = 0
-
 import httplib2
 import urllib
 import json
@@ -18,8 +13,8 @@ from credentials import TBToken, bd
 #from credentials import vk_access_token as token
 
 from keyboards import reg_keyboard, reg_keyboard2, loc_keyboard, locations, date_keyboard, dates, time_keyboard, times
-from parsers import email_validator
-from DBMS import add_user, check_user, update_user, add_event_request, update_event_request, find_a_match, my_matched_requests, my_waiting_requests
+from parsers import email_validator, otp_validator, name_surname_validator, name_surname_extractor
+from DBMS import add_user, check_user, update_user, check_user_OTP, add_event_request, update_event_request, find_a_match, my_matched_requests, my_waiting_requests
 
 updater = Updater(token=TBToken)
 JQ = updater.job_queue
@@ -39,18 +34,39 @@ def start(bot, update, args):
     if c_u:
         bot.send_message(chat_id=c_i, text="Хочешь выпить чашечку кофе?", reply_markup=reg_markup)
     else:
-        bot.send_message(chat_id=c_i, text="Напиши свою рабочую почту, чтобы я мог тебе писать холодными зимними вечерами.")
+        bot.send_message(chat_id=c_i, text="Напиши свою рабочую почту. Это нужно, чтобы я мог прислать тебе код, потому что-то коллеги из ДИБ просили меня не разговаривать с незнакомцами.")
 
 def echo(bot, update):
     c_i = update.message.chat_id
     print('got echo c_i: ', c_i)
     text = update.message.text
-    print(f'{text}')
-    if check_user(c_i) == False and email_validator(text) == False:
-        bot.send_message(chat_id=c_i, text="Странно, но вы не похожи на сотрудника банка :(")
+    print("{}".format(text))
+#    """    o_v = otp_validator(text)
+#    c_u = check_user(c_i)
+#    e_v = email_validator(text)
+#    n_s = name_surname_validator(text)[0]
+#    print(f'otp_validator(text) - {o_v}')
+#    print(f'check_user(c_i) - {c_u}')
+#    print(f'email_validator(text) - {e_v}')
+#    print(f'name_surname_validator(text)[0] - {n_s}')
     if email_validator(text):
         add_user(c_i, text)
-        bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! Можешь теперь ещё добавить свои имя и фамилию, использую команды /name и /surname соответственно? После того, как наберёшь команду, сразу пиши имя или фамилию. Например: '/name Петя' - позволит представиться Петей, а /nameМаша - нет.")
+        bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! С минуты на минуту тебе придёт письмо с четырёхзначным паролем. Пришли мне его, чтобы я знал, что ты - это ты.")
+        #        bot.send_message(chat_id=c_i, text="Прекрасно, спасибо! Можешь теперь ещё добавить свои имя и фамилию, использую команды /name и /surname соответственно? После того, как наберёшь команду, сразу пиши имя или фамилию. Например: '/name Петя' - позволит представиться Петей, а /nameМаша - нет.")
+    elif check_user(c_i) == False and otp_validator(text) == True:
+        r = check_user_OTP(c_i, text)
+        if r:
+            bot.send_message(chat_id=c_i, text="Ура, я теперь я вижу, что тебе можно доверять! \nДумаю, теперь самое время познакомиться. Пожалуйста, напиши 'Меня зовут Имя Фамилия' и после этого можно будет выпить чашечку кофе >^_^<")
+    elif check_user(c_i) == False and email_validator(text) == False and otp_validator(text) == False:
+        bot.send_message(chat_id=c_i, text="Странно, но вы не похожи на сотрудника банка :(")
+    elif name_surname_validator(text):
+        print('name validated')
+        n_s = name_surname_extractor(text)
+        updation = ("name", n_s[0])
+        update_user(c_i, updation=updation)
+        updation = ("surname", n_s[1])
+        update_user(c_i, updation=updation)
+        bot.send_message(chat_id=c_i, text="Всё, с формальностями закончили, теперь можно и кофе выпить. Ты же хочешь кофе?\nPS Если захочешь поменять имя и фамилию, то просто ещё раз напиши 'Меня зовут Имя Фамилия'", reply_markup=reg_markup)
     elif text in locations:
         updation = ("location", text)
         u_e = update_event_request(chat_id=c_i, updation=updation)
@@ -68,12 +84,12 @@ def echo(bot, update):
         print(up)
         print('try to find')
         fi = find_a_match(up)
-        try:
-            print(up['location'])
-            print(len(fi))
+        if fi:
+            match = fi[0]
+            print(match['init_chat_id'])
             bot.send_message(chat_id=c_i, text="Уже нашёл! Смотри:", reply_markup=reg_markup2)
-        except BaseException as BE:
-            print(type(BE), BE)
+            bot.send_message(chat_id=c_i, text="Локация: {0} \nДата и время: {1} {2} \nСотрудник: {3} {4}\nE-mail {5}".format(match['location'], match['date'], match['time'], fi[1]['name'], fi[1]['email']))
+            bot.send_message(chat_id=fi[1]['chat_id'], text="На ваше приглашение откликнулись!\nЛокация: {0} \nДата и время: {1} {2}\nСотрудник: {3} {4} \nE-mail {5}".format(match['location'], match['date'], match['time'], fi[2]['name'], fi[2]['surname'], fi[2]['email']))
     elif text in  ['Да, хочу!', 'Хочу ещё кофе!']:
         print("try to add e_r")
         i = add_event_request(c_i)
@@ -87,26 +103,25 @@ def echo(bot, update):
         mwr = my_waiting_requests(chat_id=c_i)
         print(mwr)
     else:
-        bot.send_message(chat_id=c_i, text=f"Я тебя не понимаю :(")
+        bot.send_message(chat_id=c_i, text="Я тебя не понимаю :(")
     print('end of echo')
 
 def help(bot, update):
-    bot.send_message(chat_id=update.message.chat_id, text = f"""
-    """)
+    bot.send_message(chat_id=update.message.chat_id, text = "Я бы помог, но у меня лапки :(")
 
 def name(bot, update, args):
     text = " ".join(args)
     updation = ("name", text)
     if text:
         update_user(chat_id=update.message.chat_id, updation=updation)
-        bot.send_message(chat_id=update.message.chat_id, text = f"""Спасибо!""")
+        bot.send_message(chat_id=update.message.chat_id, text = "Спасибо! Теперь фамилию, использую команду /surname")
 
 def surname(bot, update, args):
     text = " ".join(args)
     updation = ("surname", text)
     if text:
         update_user(chat_id=update.message.chat_id, updation=updation)
-        bot.send_message(chat_id=update.message.chat_id, text = f"""Спасибо!""")
+        bot.send_message(chat_id=update.message.chat_id, text = "Спасибо!\nТеперь может быть хочешь кофе?", reply_markup=reg_markup)
 
 
 start_handler = CommandHandler('start', start, pass_args=True)
