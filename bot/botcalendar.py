@@ -10,7 +10,12 @@ def create_event(start_end, names, location, mails):
     e.description = f'{names[0]} и {names[1]} пьют кофе и знакомятся в городе {location}'
     c.events.add(e)
     print(e)
-    filename = start_end[0].strftime("%Y-%m-%dT%H:%M:%S.%f")
+    filename = start_end[0].strftime("%Y%m%dT%H%M%S%f")# + '.ics'
+    print(list(mails))
+    print(filename)
+    print(c)
     with open(f'{filename}.ics', 'w') as my_file:
+        print('open file')
         my_file.writelines(c)
+    print('try to e-mail')
     send_invitaion(mails, f'{filename}.ics')

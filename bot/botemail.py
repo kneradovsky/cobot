@@ -17,11 +17,13 @@ def send_invitaion(mails, event):
     smtpObj = smtplib.SMTP(host='smtp.mail.ru')
     smtpObj.starttls()
     smtpObj.login(user=smtp_user, password=smtp_pass)
-    msg = form_invitation(smtp_user, mails, event)
-    smtpObj.send_message(msg=msg)
-    smtpObj.close()
-    print('inveited')
-    remove(f'{filename}.ics')
+    try:
+        msg = form_invitation(smtp_user, ', '.join(list(mails)), event)
+        smtpObj.send_message(msg=msg)
+        smtpObj.close()
+    except BaseException as be:
+        print(be)
+    remove(event)
     print('cleaning done')
 
 def form_reg_msg(code, sent_from, sent_to):
@@ -40,15 +42,12 @@ def form_reg_msg(code, sent_from, sent_to):
     msg['Subject'] = 'Код авторизации для Кофебота'
     msg['From'] = sent_from
     msg['To'] = sent_to
-    print(msg)
     return msg
 
-def form_invitation(sent_from, sent_to):
+def form_invitation(sent_from, sent_to, event):
     msg = EmailMessage()
-    msg.set_content(content)
     msg['Subject'] = 'Приглашение от Кофебота'
     msg['From'] = sent_from
     msg['To'] = sent_to
-    msg.attach(event, 'text/calendar')
-    print(msg)
+    msg.add_attachment(event, '/calendar')
     return msg

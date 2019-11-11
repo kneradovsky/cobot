@@ -1,16 +1,8 @@
-import httplib2
-import urllib
-import json
-
 from telegram import replykeyboardmarkup, replykeyboardremove
 from telegram.ext import Updater
 from telegram.ext import CommandHandler, MessageHandler, Filters
 
-#from SQL import init_tables, injector, roles
-#from SQL import read_name, add_name, get_m_r_i, upd_m_r_i, add_member_role, get_role, is_role
-
 from credentials import TBToken, bd
-#from credentials import vk_access_token as token
 
 from keyboards import reg_keyboard, reg_keyboard2, loc_keyboard, locations, date_keyboard, dates, time_keyboard, times
 from parsers import email_validator, otp_validator, name_surname_validator, name_surname_extractor
@@ -84,12 +76,13 @@ def echo(bot, update):
         print(up)
         print('try to find')
         fi = find_a_match(up)
-        if fi:
+        try:
             match = fi[0]
-            print(match['init_chat_id'])
-            bot.send_message(chat_id=c_i, text="Уже нашёл! Смотри:", reply_markup=reg_markup2)
+            bot.send_message(chat_id=c_i, text="Уже нашёл! Ищи приглашение в почте :)", reply_markup=reg_markup2)
             bot.send_message(chat_id=c_i, text="Локация: {0} \nДата и время: {1} {2} \nСотрудник: {3} {4}\nE-mail {5}".format(match['location'], match['date'], match['time'], fi[1]['name'], fi[1]['email']))
             bot.send_message(chat_id=fi[1]['chat_id'], text="На ваше приглашение откликнулись!\nЛокация: {0} \nДата и время: {1} {2}\nСотрудник: {3} {4} \nE-mail {5}".format(match['location'], match['date'], match['time'], fi[2]['name'], fi[2]['surname'], fi[2]['email']))
+        except BaseException as be:
+            print(type(be), be)
     elif text in  ['Да, хочу!', 'Хочу ещё кофе!']:
         print("try to add e_r")
         i = add_event_request(c_i)

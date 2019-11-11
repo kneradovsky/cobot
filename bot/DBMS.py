@@ -3,9 +3,8 @@ from credentials import bd as host
 from random import randint
 from botemail import verify_mail
 from parsers import location_to_delta, list_to_datetime
-from calendar import create_event
+from botcalendar import create_event
 client = MongoClient(host, 27017)
-#client = MongoClient(host, 27017)
 db = client.test_bot_database
 users = db.users
 """user = { 'chat_id' : 247893408,
