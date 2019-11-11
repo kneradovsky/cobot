@@ -18,4 +18,4 @@ def create_event(start_end, names, location, mails):
         print('open file')
         my_file.writelines(c)
     print('try to e-mail')
-    send_invitaion(mails, f'{filename}.ics')
+    send_invitaion(mails, f'{filename}.ics')#here we call function to return our event via mail. althoug it is possible to send via chat 

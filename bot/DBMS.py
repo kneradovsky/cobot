@@ -7,14 +7,14 @@ from botcalendar import create_event
 client = MongoClient(host, 27017)
 db = client.test_bot_database
 users = db.users
-"""user = { 'chat_id' : 247893408,
+"""user = { 'chat_id' : 247893408,#relict from test purposes
         'e-mail' : 'denis.davydov8@open.ru',
         'works' : True,
         'incoming_events' : []
 }"""
 
 
-def add_user(chat_id, email):
+def add_user(chat_id, email):#if we have email, that at least looks like PJSC Opens's, then we can create user
     print('adding user')
     try:
         users = db.users
@@ -23,15 +23,15 @@ def add_user(chat_id, email):
                 'email' : email,
                 'name': False,
                 'surname': False,
-                'works' : False,
-                'OTP' : OTP,
+                'works' : False,#no wrights are granted here
+                'OTP' : OTP,#in future it should be removed when verified
                 'incoming_events' : []    }
         mdb_uid = users.insert_one(user).inserted_id
         verify_mail(email, OTP)
     except BaseException as be:
         print(be)
 
-def update_user(chat_id, updation):
+def update_user(chat_id, updation):#universal function to update users. takes a tuple of (column_name, value) as a second parameter
     users = db.users
     user = users.find_one({'chat_id' : chat_id})
     if user:

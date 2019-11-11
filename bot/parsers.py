@@ -7,7 +7,7 @@ def keyboard_to_list(keyboard):
         l.append(key[0])
     return l
 
-def location_to_delta(location):
+def location_to_delta(location):#maybe it's better to use UTC timezones, but for start there is simple timedelta according to location
     delta = 0
     if 'Москва' in location:
         pass
@@ -25,7 +25,7 @@ def location_to_delta(location):
         delta = 7
     return delta
 
-def list_to_datetime(str_list, delta):
+def list_to_datetime(str_list, delta): #simple translation from human-readable to machine-readable format of datetime objects
     today = datetime.now()
     days_delta = timedelta(days=0)
     start_hour = 9
@@ -47,6 +47,7 @@ def list_to_datetime(str_list, delta):
     end = start + timedelta(hours=1)
     return (start, end)
 
+#I guess the following is obvious
 def email_validator(text):
     m = re.search(".+@open.ru", text)
     if m:
@@ -63,7 +64,7 @@ def otp_validator(text):
 
 def name_surname_validator(text):
     print('start name validation')
-    command = str(text).lower()[0:11]
+    command = str(text).lower()[0:11]#magic range of 'command' "Меня зовут"
     print(command)
     if command == 'Меня зовут '.lower():
         return True#(true, name_surname)

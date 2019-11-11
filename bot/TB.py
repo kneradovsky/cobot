@@ -9,7 +9,7 @@ from parsers import email_validator, otp_validator, name_surname_validator, name
 from DBMS import add_user, check_user, update_user, check_user_OTP, add_event_request, update_event_request, find_a_match, my_matched_requests, my_waiting_requests
 
 updater = Updater(token=TBToken)
-JQ = updater.job_queue
+# JQ = updater.job_queue #for future, in order to add possibility of notification in TG
 dispatcher = updater.dispatcher
 
 reg_markup = replykeyboardmarkup.ReplyKeyboardMarkup(reg_keyboard, one_time_keyboard=True)
@@ -28,12 +28,13 @@ def start(bot, update, args):
     else:
         bot.send_message(chat_id=c_i, text="Напиши свою рабочую почту. Это нужно, чтобы я мог прислать тебе код, потому что-то коллеги из ДИБ просили меня не разговаривать с незнакомцами.")
 
-def echo(bot, update):
+def echo(bot, update):#all the  'commands' are proceed via message parsing, as long as users rarely can use '/command' style interfaces
+#parsers are in parsers.py
     c_i = update.message.chat_id
     print('got echo c_i: ', c_i)
     text = update.message.text
     print("{}".format(text))
-    if email_validator(text):
+    if email_validator(text) and check_user(c_i) == False:
         print('start mail')
         try:
             add_user(c_i, text)
@@ -44,6 +45,8 @@ def echo(bot, update):
         r = check_user_OTP(c_i, text)
         if r:
             bot.send_message(chat_id=c_i, text="Ура, я теперь я вижу, что тебе можно доверять! \nДумаю, теперь самое время познакомиться. Пожалуйста, напиши 'Меня зовут Имя Фамилия' и после этого можно будет выпить чашечку кофе >^_^<")
+        else:
+            bot.send_message(chat_id=c_i, text="Очень странно, но код не подошёл. Напиши свой почтовый адрес ещё раз, я вышлю новый пароль!")
     elif check_user(c_i) == False and email_validator(text) == False and otp_validator(text) == False:
         bot.send_message(chat_id=c_i, text="Странно, но вы не похожи на сотрудника банка :(")
     elif name_surname_validator(text):
